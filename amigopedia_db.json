@@ -19,7 +19,12 @@
       }
     },
     "AK CLASS 12TH": {
-      "subjects": {}
+      "subjects": {
+        "ORGANIC": {
+          "teacher": "SKM SIR",
+          "chapters": {}
+        }
+      }
     }
   },
   "index_msgs": {},
