@@ -42,7 +42,13 @@
           "teacher": "Coming Soon",
           "chapters": {
             "Kabir Singh": {
-              "lectures": []
+              "lectures": [
+                {
+                  "idx": 0,
+                  "title": "Kabir Singh (2019) Bollywood Hindi Movie HD 720p ESub.mp4",
+                  "msg_id": 59
+                }
+              ]
             }
           }
         }
@@ -52,6 +58,7 @@
   "index_msgs": {},
   "lecture_ids": {
     "ISOMERISM__0": 14,
-    "STREOIDOMER__0": 26
+    "STREOIDOMER__0": 26,
+    "Kabir Singh__0": 59
   }
 }
