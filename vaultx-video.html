@@ -623,7 +623,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);tran
 <div class="player-root" id="playerRoot">
   <div class="vp-ph" id="vpPh">
     <div class="vp-ph-icon">▶</div>
-    <div class="vp-ph-text">Telegram backend connect karo<br>video stream hoga</div>
+    <div class="vp-ph-text">Video load ho rahi hai...<br>Ek second ruko ⏳</div>
   </div>
   <video id="mainVideo" playsinline preload="metadata"></video>
   <!-- Seek flash -->
@@ -1467,53 +1467,99 @@ function setupPlayer() {
   root.addEventListener('touchmove',handleSwipeMove,{passive:true});
 }
 
-function loadVideo() {
-  const v   = document.getElementById('mainVideo');
-  const ids = JSON.parse(localStorage.getItem('vx_lecture_ids') || '{}');
-  const msgId = ids[`${currentChapter}__${currentIdx}`];
+async function loadVideo() {
+  const v = document.getElementById('mainVideo');
 
+  // ── Step 1: localStorage mein check karo ──
+  let ids = JSON.parse(localStorage.getItem('vx_lecture_ids') || '{}');
+  let msgId = ids[`${currentChapter}__${currentIdx}`];
+
+  // ── Step 2: Agar nahi mila toh /api/db se fetch karo ──
   if (!msgId) {
-    document.getElementById('vpPh').querySelector && 
-    (document.getElementById('vpPh').textContent = 'Video ID set nahi hai');
+    const servers = [...RAILWAY_SERVERS, ...RENDER_SERVERS];
+    for (const server of servers) {
+      try {
+        const r = await fetch(server + '/api/db', {signal: AbortSignal.timeout(5000)});
+        const db = await r.json();
+
+        // DB se lecture IDs nikalo
+        const dbIds = db.lecture_ids || {};
+        if (Object.keys(dbIds).length > 0) {
+          // localStorage update karo future ke liye
+          localStorage.setItem('vx_lecture_ids', JSON.stringify(dbIds));
+          ids = dbIds;
+          msgId = ids[`${currentChapter}__${currentIdx}`];
+        }
+
+        // Agar phir bhi nahi mila — DB structure se dhundo
+        if (!msgId && db.batches) {
+          const batches = db.batches;
+          for (const bname of Object.keys(batches)) {
+            const subjects = batches[bname].subjects || {};
+            for (const sname of Object.keys(subjects)) {
+              const chapters = subjects[sname].chapters || {};
+              if (chapters[currentChapter]) {
+                const lectures = chapters[currentChapter].lectures || [];
+                const lec = lectures.find(l => l.idx === currentLecIdx || l.idx === currentIdx);
+                if (lec && lec.msg_id) {
+                  msgId = lec.msg_id;
+                  // Save karo
+                  ids[`${currentChapter}__${currentIdx}`] = msgId;
+                  localStorage.setItem('vx_lecture_ids', JSON.stringify(ids));
+                  break;
+                }
+              }
+            }
+            if (msgId) break;
+          }
+        }
+        if (msgId) break;
+      } catch(e) {
+        continue;
+      }
+    }
+  }
+
+  // ── Step 3: Agar phir bhi nahi mila ──
+  if (!msgId) {
+    document.getElementById('vpPh').style.display = 'flex';
+    document.getElementById('vpPh').querySelector('.vp-ph-text').innerHTML =
+      'Video ID nahi mili<br>Bot se lecture add karo ya /sync karo';
     return;
   }
 
-  // Save current msgId globally (shift ke liye zaruri)
+  // ── Step 4: Play karo! ──
   currentMsgId = msgId;
   SERVERS = [...RAILWAY_SERVERS, ...RENDER_SERVERS];
 
   if (!SERVERS.length) {
-    document.getElementById('vpPh').style.display = 'flex';
+    document.getElementById('vpPh').querySelector('.vp-ph-text').innerHTML =
+      'Server URL set nahi hai<br>Railway URL add karo';
     return;
   }
 
   if (activeServer) {
-    // ✅ Step 1: Turant Railway se stream shuru karo
     v.src = `${activeServer}/api/stream/${msgId}`;
     document.getElementById('vpPh').style.display = 'none';
     v.play().catch(() => {});
 
-    // ✅ Step 2: Background mein Render ko jagao (agar set hai)
+    // Background mein Render jagao
     if (RENDER_SERVERS.length && !renderReady) {
       setTimeout(() => wakeRender(), 500);
     }
 
-    // ✅ Step 3: Server load check — agar bahut zyada load hai
+    // Load check
     setTimeout(async () => {
       const status = await checkServerLoad(activeServer);
       if (status && status.load_pct > 85) {
-        // Server 85%+ busy — silently fallback prepare karo
-        showFallbackBanner(
-          '⚡ Server Heavy Load',
-          'Servers busy hain. Telegram fallback ready hai.',
-          true, false
-        );
+        showFallbackBanner('⚡ Server Heavy Load', 'Servers busy hain.', true, false);
       }
     }, 5000);
 
   } else {
-    // Railway nahi mili — wait karo
-    document.getElementById('vpPh').style.display = 'flex';
+    // Server dhund raha hai — wait karo
+    document.getElementById('vpPh').querySelector('.vp-ph-text').innerHTML =
+      'Server se connect ho raha hai...<br>Ek second ⏳';
     const wait = setInterval(() => {
       if (activeServer) {
         clearInterval(wait);
