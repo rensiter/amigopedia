@@ -40,7 +40,11 @@
       "subjects": {
         "Hindi movie": {
           "teacher": "Coming Soon",
-          "chapters": {}
+          "chapters": {
+            "Kabir Singh": {
+              "lectures": []
+            }
+          }
         }
       }
     }
