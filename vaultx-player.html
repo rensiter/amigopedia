@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="hi" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VAULTX — Lectures</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080810;--surface:#10101e;--card:#131320;--card-hover:#1a1a2e;
+  --border:rgba(255,255,255,0.06);--border-hover:rgba(255,255,255,0.14);
+  --text:#eeeef8;--text-sub:#7777a0;--text-muted:#33334a;
+  --accent:#7c6dfa;--accent2:#fa6d8e;--accent3:#3df5a0;
+  --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+}
+[data-theme="light"]{
+  --bg:#f4f4fc;--surface:#e8e8f5;--card:#ffffff;--card-hover:#f8f8ff;
+  --border:rgba(0,0,0,0.07);--border-hover:rgba(0,0,0,0.14);
+  --text:#0e0e22;--text-sub:#55558a;--text-muted:#aaaacc;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;}
+.mesh{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.mesh-orb{position:absolute;border-radius:50%;filter:blur(100px);}
+.mesh-orb:nth-child(1){width:500px;height:500px;background:radial-gradient(circle,rgba(124,109,250,0.09) 0%,transparent 70%);top:-100px;right:-100px;}
+.mesh-orb:nth-child(2){width:350px;height:350px;background:radial-gradient(circle,rgba(61,245,160,0.06) 0%,transparent 70%);bottom:0;left:-60px;}
+
+header{position:sticky;top:0;z-index:200;height:60px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+[data-theme="light"] header{background:rgba(244,244,252,0.88);}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.brand-logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#7c6dfa,#fa6d8e);display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.brand-text{font-family:var(--font-display);font-size:1.1rem;font-weight:800;letter-spacing:2px;
+  background:linear-gradient(90deg,#a89dfc,#fc8daa);background-size:200%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 5s linear infinite;}
+@keyframes shimmer{to{background-position:200%;}}
+.h-right{display:flex;gap:.4rem;}
+.h-btn{height:30px;padding:0 12px;background:var(--card);border:1px solid var(--border);border-radius:7px;
+  color:var(--text-sub);font-family:var(--font-body);font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.h-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+main{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:2rem 1.2rem 5rem;}
+
+/* BREADCRUMB */
+.breadcrumb{display:flex;align-items:center;gap:.4rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+.bc-item{font-size:.72rem;font-weight:600;color:var(--text-muted);text-decoration:none;transition:color .2s;}
+.bc-item:hover{color:var(--accent);}
+.bc-sep{font-size:.65rem;color:var(--text-muted);}
+.bc-current{color:var(--text-sub);font-weight:700;}
+
+/* CHAPTER HEADER */
+.chapter-header{
+  background:var(--card);border:1px solid var(--border);border-radius:18px;
+  padding:1.5rem;margin-bottom:2rem;position:relative;overflow:hidden;
+}
+.chapter-header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#7c6dfa,#fa6d8e,#3df5a0);}
+.ch-header-inner{display:flex;align-items:center;gap:1rem;}
+.ch-header-icon{width:52px;height:52px;border-radius:14px;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(124,109,250,0.2),rgba(250,109,142,0.1));
+  border:1px solid rgba(124,109,250,0.2);
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.ch-header-info{flex:1;}
+.ch-header-num{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:2px;}
+.ch-header-title{font-family:var(--font-display);font-size:1.25rem;font-weight:800;line-height:1.1;}
+.ch-header-sub{font-size:.75rem;color:var(--text-sub);margin-top:5px;}
+.ch-header-pills{display:flex;gap:.4rem;margin-top:.7rem;flex-wrap:wrap;}
+.ch-pill{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;
+  padding:3px 10px;font-size:.65rem;font-weight:700;color:var(--text-muted);}
+
+/* TABS */
+.tabs{display:flex;gap:.3rem;margin-bottom:1.2rem;
+  background:var(--surface);border-radius:10px;padding:.3rem;}
+.tab{flex:1;padding:.55rem;border:none;background:transparent;
+  color:var(--text-muted);font-family:var(--font-body);font-size:.75rem;font-weight:700;
+  border-radius:8px;cursor:pointer;transition:all .2s;text-align:center;}
+.tab.active{background:var(--card);color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* LECTURE LIST */
+.lecture-list{display:flex;flex-direction:column;gap:.5rem;}
+
+.lecture-item{
+  display:flex;align-items:center;gap:.85rem;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:.85rem 1rem;cursor:pointer;text-decoration:none;
+  transition:transform .25s,border-color .25s,box-shadow .2s;
+  position:relative;
+}
+.lecture-item:hover{transform:translateX(3px);border-color:rgba(124,109,250,.22);
+  box-shadow:0 4px 20px rgba(0,0,0,.2);}
+.lecture-item.watched::after{content:'✓';
+  position:absolute;top:8px;right:8px;
+  width:18px;height:18px;border-radius:50%;
+  background:rgba(61,245,160,0.15);border:1px solid rgba(61,245,160,0.3);
+  color:#3df5a0;font-size:.6rem;font-weight:900;
+  display:flex;align-items:center;justify-content:center;}
+
+.lec-thumb{
+  width:48px;height:48px;border-radius:10px;flex-shrink:0;overflow:hidden;
+  background:linear-gradient(135deg,rgba(124,109,250,0.2),rgba(250,109,142,0.1));
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(124,109,250,0.15);
+  position:relative;
+}
+.lec-play-icon{font-size:1.1rem;transition:transform .3s;}
+.lecture-item:hover .lec-play-icon{transform:scale(1.2);}
+.lec-num-badge{position:absolute;bottom:2px;right:2px;
+  background:rgba(0,0,0,.6);border-radius:3px;
+  padding:1px 4px;font-size:.5rem;font-weight:800;color:#fff;}
+
+.lec-info{flex:1;min-width:0;}
+.lec-title{font-size:.88rem;font-weight:700;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lec-meta{display:flex;align-items:center;gap:.4rem;margin-top:3px;}
+.lec-tag{font-size:.63rem;font-weight:700;color:var(--text-muted);}
+.lec-dot{width:3px;height:3px;border-radius:50%;background:var(--text-muted);}
+
+.lec-right{flex-shrink:0;display:flex;align-items:center;gap:.5rem;}
+.lec-duration{font-size:.67rem;font-weight:700;color:var(--text-muted);
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:5px;padding:2px 7px;white-space:nowrap;}
+.lec-arrow{color:var(--text-muted);font-size:.8rem;transition:all .25s;}
+.lecture-item:hover .lec-arrow{color:var(--accent);transform:translateX(2px);}
+
+/* NOTES/DPP PLACEHOLDER */
+.placeholder-box{background:var(--card);border:1px dashed var(--border);border-radius:12px;
+  padding:2.5rem;text-align:center;color:var(--text-muted);}
+.placeholder-icon{font-size:2rem;margin-bottom:.5rem;}
+.placeholder-text{font-size:.82rem;font-weight:600;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px;}
+</style>
+</head>
+<body>
+<div class="mesh"><div class="mesh-orb"></div><div class="mesh-orb"></div></div>
+
+<header>
+  <a class="brand" href="vaultx-home.html">
+    <div class="brand-logo">⚡</div>
+    <span class="brand-text">VAULTX</span>
+  </a>
+  <div class="h-right">
+    <button class="h-btn" onclick="history.back()">← Back</button>
+    <button class="h-btn" onclick="toggleMode()" id="modeBtn">🌙</button>
+  </div>
+</header>
+
+<main>
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb">
+    <a class="bc-item" href="vaultx-home.html">Home</a>
+    <span class="bc-sep">›</span>
+    <a class="bc-item" id="bcBatch" href="#">Batch</a>
+    <span class="bc-sep">›</span>
+    <a class="bc-item" id="bcSubject" href="#">Subject</a>
+    <span class="bc-sep">›</span>
+    <span class="bc-current" id="bcChapter">Chapter</span>
+  </div>
+
+  <!-- CHAPTER HEADER -->
+  <div class="chapter-header">
+    <div class="ch-header-inner">
+      <div class="ch-header-icon">📑</div>
+      <div class="ch-header-info">
+        <div class="ch-header-num" id="chNum">CHAPTER 01</div>
+        <div class="ch-header-title" id="chTitle">Chapter Title</div>
+        <div class="ch-header-sub" id="chSub">Subject · Batch</div>
+        <div class="ch-header-pills" id="chPills"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('videos',this)">🎬 Videos</button>
+    <button class="tab" onclick="switchTab('notes',this)">📝 Notes</button>
+    <button class="tab" onclick="switchTab('dpp',this)">📋 DPP</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-videos">
+    <div class="lecture-list" id="lectureList"></div>
+  </div>
+  <div class="tab-panel" id="tab-notes">
+    <div class="placeholder-box">
+      <div class="placeholder-icon">📝</div>
+      <div class="placeholder-text">Notes coming soon!</div>
+    </div>
+  </div>
+  <div class="tab-panel" id="tab-dpp">
+    <div class="placeholder-box">
+      <div class="placeholder-icon">📋</div>
+      <div class="placeholder-text">DPP sheets coming soon!</div>
+    </div>
+  </div>
+</main>
+
+<script>
+const savedTheme = localStorage.getItem('vx_theme')||'dark';
+document.documentElement.setAttribute('data-theme',savedTheme);
+document.getElementById('modeBtn').textContent = savedTheme==='dark'?'🌙':'☀️';
+function toggleMode(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  const next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('vx_theme',next);
+  document.getElementById('modeBtn').textContent=next==='dark'?'🌙':'☀️';
+}
+
+const urlp = new URLSearchParams(window.location.search);
+const batchName   = urlp.get('batch')   || 'Batch';
+const subjectName = urlp.get('subject') || 'Subject';
+const chapterName = urlp.get('chapter') || 'Chapter';
+const chNum       = urlp.get('num')     || '01';
+
+document.title = `VAULTX — ${chapterName}`;
+document.getElementById('bcBatch').textContent = batchName;
+document.getElementById('bcBatch').href = `vaultx-batch.html?batch=${encodeURIComponent(batchName)}`;
+document.getElementById('bcSubject').textContent = subjectName;
+document.getElementById('bcSubject').href = `vaultx-chapters.html?batch=${encodeURIComponent(batchName)}&subject=${encodeURIComponent(subjectName)}`;
+document.getElementById('bcChapter').textContent = chapterName;
+document.getElementById('chNum').textContent = `CHAPTER ${chNum}`;
+document.getElementById('chTitle').textContent = chapterName;
+document.getElementById('chSub').textContent = `${subjectName} · ${batchName}`;
+
+function switchTab(name, btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+const watchedKey = `vx_watched_${batchName}_${subjectName}_${chapterName}`;
+const watched = new Set(JSON.parse(localStorage.getItem(watchedKey)||'[]'));
+
+const DURATIONS = ['8:24','12:15','9:40','15:22','11:05','18:30','7:55','13:45','10:20','14:15'];
+
+function renderLectures(lectures){
+  const totalLec = lectures.length;
+  document.getElementById('chPills').innerHTML = `
+    <div class="ch-pill">🎬 ${totalLec} lectures</div>
+    <div class="ch-pill">✅ ${watched.size} watched</div>`;
+
+  const list = document.getElementById('lectureList');
+  list.innerHTML = '';
+  lectures.forEach((lec, i) => {
+    const isWatched = watched.has(i);
+    const a = document.createElement('a');
+    a.className = `lecture-item${isWatched?' watched':''}`;
+    a.href = `vaultx-video.html?batch=${encodeURIComponent(batchName)}&subject=${encodeURIComponent(subjectName)}&chapter=${encodeURIComponent(chapterName)}&idx=${i}&title=${encodeURIComponent(lec.title||lec)}`;
+    const dur = DURATIONS[i % DURATIONS.length];
+    const title = lec.title || lec || `Lecture ${String(i+1).padStart(2,'0')}`;
+    const numStr = String(i+1).padStart(2,'0');
+    a.innerHTML = `
+      <div class="lec-thumb">
+        <div class="lec-play-icon">${isWatched?'✅':'▶️'}</div>
+        <div class="lec-num-badge">${numStr}</div>
+      </div>
+      <div class="lec-info">
+        <div class="lec-title">${title}</div>
+        <div class="lec-meta">
+          <span class="lec-tag">Lecture ${numStr}</span>
+          <div class="lec-dot"></div>
+          <span class="lec-tag">${isWatched?'Watched':'Not watched'}</span>
+        </div>
+      </div>
+      <div class="lec-right">
+        <div class="lec-duration">⏱ ${dur}</div>
+        <div class="lec-arrow">›</div>
+      </div>`;
+    list.appendChild(a);
+  });
+}
+
+async function loadLectures(){
+  const server = localStorage.getItem('vx_server') || (localStorage.getItem('vx_servers') && JSON.parse(localStorage.getItem('vx_servers'))[0]);
+  if(server){
+    try{
+      const r = await fetch(server+'/api/db',{signal:AbortSignal.timeout(4000)});
+      const data = await r.json();
+      const chData = data.batches?.[batchName]?.subjects?.[subjectName]?.chapters?.[chapterName];
+      if(chData?.lectures?.length){
+        renderLectures(chData.lectures);
+        return;
+      }
+    }catch{}
+  }
+  // Fallback
+  const count = parseInt(urlp.get('lec'))||8;
+  const fallback = Array.from({length:count},(_,i)=>({title:`Lecture ${String(i+1).padStart(2,'0')} — ${chapterName}`}));
+  renderLectures(fallback);
+}
+
+loadLectures();
+</script>
+</body>
+</html>

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="hi" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>VAULTX Mini App</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080810;--surface:#10101e;--card:#131320;--card-hover:#1a1a2e;
+  --border:rgba(255,255,255,0.07);--text:#eeeef8;--text-sub:#7777a0;--text-muted:#33334a;
+  --accent:#7c6dfa;--accent2:#fa6d8e;--accent3:#3df5a0;--accent4:#fabc3d;
+  --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+  --tg-safe-top: env(safe-area-inset-top, 0px);
+  --tg-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);color:var(--text);
+  display:flex;flex-direction:column;
+  padding-top:var(--tg-safe-top);
+  padding-bottom:var(--tg-safe-bottom);
+}
+
+/* ── PAGES ── */
+.page{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;
+}
+.page.hidden{transform:translateX(100%);opacity:0;pointer-events:none;}
+.page.slide-back{transform:translateX(-30%);opacity:.5;pointer-events:none;}
+
+/* ── TOP BAR ── */
+.topbar{
+  height:54px;flex-shrink:0;
+  display:flex;align-items:center;
+  padding:0 1rem;gap:.8rem;
+  background:rgba(8,8,16,0.9);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+.topbar-back{
+  width:32px;height:32px;border-radius:8px;
+  background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;cursor:pointer;flex-shrink:0;
+  transition:all .2s;
+}
+.topbar-back:active{transform:scale(.92);}
+.topbar-title{font-family:var(--font-display);font-size:.95rem;font-weight:800;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar-brand{font-family:var(--font-display);font-size:1rem;font-weight:800;
+  background:linear-gradient(90deg,#a89dfc,#fc8daa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* ── SCROLL AREA ── */
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.scroll-area::-webkit-scrollbar{display:none;}
+.page-content{padding:1rem 1rem 2rem;}
+
+/* ── HOME ── */
+.home-hero{padding:1.2rem 1rem .8rem;text-align:center;}
+.home-greeting{font-size:.8rem;color:var(--text-muted);font-weight:600;margin-bottom:.3rem;}
+.home-name{font-family:var(--font-display);font-size:1.4rem;font-weight:800;margin-bottom:.2rem;}
+.home-sub{font-size:.78rem;color:var(--text-sub);}
+
+.stats-row{display:flex;gap:.5rem;padding:.8rem 1rem;}
+.stat-card{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:.7rem .5rem;text-align:center;}
+.stat-val{font-family:var(--font-display);font-size:1.1rem;font-weight:800;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.stat-label{font-size:.6rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:1px;}
+
+.section-head{display:flex;align-items:center;justify-content:space-between;
+  padding:.3rem 1rem .5rem;}
+.section-title{font-size:.7rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;}
+
+/* ── BATCH CARDS (Horizontal scroll) ── */
+.batch-scroll{display:flex;gap:.7rem;padding:0 1rem 1rem;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.batch-scroll::-webkit-scrollbar{display:none;}
+.batch-mini{
+  flex-shrink:0;width:140px;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  overflow:hidden;cursor:pointer;
+  transition:transform .2s;
+  active:transform:scale(.96);
+}
+.batch-mini:active{transform:scale(.95);}
+.batch-mini-visual{height:70px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;position:relative;}
+.batch-mini-info{padding:.55rem .7rem;}
+.batch-mini-name{font-family:var(--font-display);font-size:.78rem;font-weight:800;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.batch-mini-count{font-size:.62rem;color:var(--text-muted);font-weight:600;margin-top:1px;}
+
+/* ── LIST ITEMS ── */
+.list-item{
+  display:flex;align-items:center;gap:.8rem;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:.8rem .9rem;cursor:pointer;margin-bottom:.5rem;
+  transition:transform .15s;
+  active:transform:scale(.98);
+}
+.list-item:active{transform:scale(.98);}
+.list-icon{width:38px;height:38px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.list-info{flex:1;min-width:0;}
+.list-title{font-size:.85rem;font-weight:700;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.list-sub{font-size:.68rem;color:var(--text-sub);margin-top:2px;}
+.list-arrow{color:var(--text-muted);font-size:.75rem;flex-shrink:0;}
+.list-badge{font-size:.62rem;font-weight:800;padding:2px 7px;border-radius:5px;
+  background:rgba(124,109,250,0.12);color:var(--accent);flex-shrink:0;}
+
+/* ── LECTURE ITEM ── */
+.lec-item{
+  display:flex;align-items:center;gap:.8rem;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:.75rem .9rem;cursor:pointer;margin-bottom:.45rem;
+  transition:transform .15s;
+}
+.lec-item:active{transform:scale(.98);}
+.lec-thumb{width:44px;height:44px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(124,109,250,.2),rgba(250,109,142,.1));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+  border:1px solid rgba(124,109,250,.15);}
+.lec-info{flex:1;min-width:0;}
+.lec-title{font-size:.83rem;font-weight:700;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lec-meta{font-size:.65rem;color:var(--text-muted);margin-top:2px;}
+.lec-watched{width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  background:rgba(61,245,160,.1);border:1px solid rgba(61,245,160,.2);
+  display:flex;align-items:center;justify-content:center;font-size:.6rem;color:#3df5a0;}
+
+/* ── VIDEO PLAYER PAGE ── */
+.video-wrap{background:#000;width:100%;aspect-ratio:16/9;position:relative;}
+.video-wrap video{width:100%;height:100%;object-fit:contain;}
+.video-info{padding:.9rem 1rem;}
+.video-title{font-family:var(--font-display);font-size:1rem;font-weight:800;margin-bottom:.3rem;line-height:1.3;}
+.video-meta{font-size:.72rem;color:var(--text-sub);display:flex;gap:.8rem;flex-wrap:wrap;}
+.video-actions{display:flex;gap:.5rem;padding:.5rem 1rem 1rem;overflow-x:auto;}
+.video-actions::-webkit-scrollbar{display:none;}
+.vact-btn{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:.55rem .7rem;cursor:pointer;min-width:54px;transition:all .2s;}
+.vact-btn:active{transform:scale(.93);}
+.vact-icon{font-size:1rem;}
+.vact-label{font-size:.55rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  height:58px;flex-shrink:0;
+  display:flex;
+  background:rgba(8,8,16,.95);
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  padding-bottom:var(--tg-safe-bottom);
+}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;transition:all .2s;}
+.nav-icon{font-size:1.1rem;transition:transform .2s;}
+.nav-label{font-size:.58rem;font-weight:700;color:var(--text-muted);letter-spacing:.3px;}
+.nav-item.active .nav-label{color:var(--accent);}
+.nav-item.active .nav-icon{transform:scale(1.15);}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);margin-top:-2px;opacity:0;}
+.nav-item.active .nav-dot{opacity:1;}
+
+/* ── SEARCH BAR ── */
+.search-bar{
+  display:flex;align-items:center;gap:.6rem;
+  background:var(--surface);border:1.5px solid var(--border);border-radius:10px;
+  padding:.65rem .9rem;margin:.3rem 1rem .8rem;
+  transition:border-color .25s;
+}
+.search-bar:focus-within{border-color:rgba(124,109,250,.4);}
+.search-bar input{flex:1;background:transparent;border:none;outline:none;
+  font-family:var(--font-body);font-size:.85rem;color:var(--text);}
+.search-bar input::placeholder{color:var(--text-muted);}
+
+/* ── PROFILE PAGE ── */
+.profile-hero{text-align:center;padding:1.5rem 1rem 1rem;}
+.profile-avatar{width:72px;height:72px;border-radius:50%;margin:0 auto .7rem;
+  background:linear-gradient(135deg,#7c6dfa,#fa6d8e);
+  display:flex;align-items:center;justify-content:center;font-size:1.8rem;
+  box-shadow:0 0 30px rgba(124,109,250,.35);}
+.profile-name{font-family:var(--font-display);font-size:1.1rem;font-weight:800;margin-bottom:.2rem;}
+.profile-handle{font-size:.78rem;color:var(--text-sub);}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:.8rem 0;}
+.pstat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.6rem;text-align:center;}
+.pstat-val{font-family:var(--font-display);font-size:1rem;font-weight:800;color:var(--accent);}
+.pstat-label{font-size:.6rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;}
+.menu-item{display:flex;align-items:center;gap:.8rem;padding:.85rem .9rem;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:.45rem;cursor:pointer;}
+.menu-icon{width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.menu-label{font-size:.85rem;font-weight:600;color:var(--text);flex:1;}
+.menu-arrow{color:var(--text-muted);font-size:.8rem;}
+
+/* ── LOADING ── */
+.loader{display:flex;align-items:center;justify-content:center;padding:2rem;
+  color:var(--text-muted);font-size:.82rem;font-weight:600;gap:.5rem;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ PAGE: HOME ══════════════════ -->
+<div class="page" id="pageHome">
+  <div class="topbar">
+    <span class="topbar-brand">⚡ VAULTX</span>
+  </div>
+  <div class="scroll-area">
+    <!-- Hero -->
+    <div class="home-hero">
+      <div class="home-greeting">Namaste 👋</div>
+      <div class="home-name" id="tgName">Student</div>
+      <div class="home-sub">Aaj kya padhoge?</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-val" id="hStatBatch">0</div>
+        <div class="stat-label">Batches</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="hStatLec">0</div>
+        <div class="stat-label">Lectures</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="hStatDone">0</div>
+        <div class="stat-label">Watched</div>
+      </div>
+    </div>
+
+    <!-- Batches -->
+    <div class="section-head">
+      <span class="section-title">All Batches</span>
+    </div>
+    <div class="batch-scroll" id="batchScroll">
+      <div class="loader">⏳ Loading...</div>
+    </div>
+
+    <!-- Continue Watching -->
+    <div id="continueSection" style="display:none">
+      <div class="section-head" style="margin-top:.3rem">
+        <span class="section-title">Continue Watching</span>
+      </div>
+      <div class="page-content" style="padding-top:0" id="continueList"></div>
+    </div>
+  </div>
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home')">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Home</div>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" onclick="switchTab('search')">
+      <div class="nav-icon">🔍</div>
+      <div class="nav-label">Search</div>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" onclick="switchTab('profile')">
+      <div class="nav-icon">👤</div>
+      <div class="nav-label">Profile</div>
+      <div class="nav-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE: SEARCH ══════════════════ -->
+<div class="page hidden" id="pageSearch">
+  <div class="topbar">
+    <span class="topbar-brand">🔍 Search</span>
+  </div>
+  <div class="search-bar">
+    <span>🔍</span>
+    <input type="text" id="searchInput" placeholder="Batch ya subject dhundo..." oninput="doSearch(this.value)" autocomplete="off"/>
+  </div>
+  <div class="scroll-area">
+    <div class="page-content" id="searchResults">
+      <div class="loader">Type karo kuch dhundne ke liye...</div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="switchTab('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div><div class="nav-dot"></div></div>
+    <div class="nav-item active" onclick="switchTab('search')"><div class="nav-icon">🔍</div><div class="nav-label">Search</div><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="switchTab('profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div><div class="nav-dot"></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE: PROFILE ══════════════════ -->
+<div class="page hidden" id="pageProfile">
+  <div class="topbar"><span class="topbar-brand">👤 Profile</span></div>
+  <div class="scroll-area">
+    <div class="profile-hero">
+      <div class="profile-avatar" id="profAvatar">🎓</div>
+      <div class="profile-name" id="profName">Student</div>
+      <div class="profile-handle" id="profHandle">@username</div>
+      <div class="profile-stats">
+        <div class="pstat"><div class="pstat-val" id="pWatched">0</div><div class="pstat-label">Watched</div></div>
+        <div class="pstat"><div class="pstat-val" id="pStreak">0</div><div class="pstat-label">Streak</div></div>
+        <div class="pstat"><div class="pstat-val" id="pScore">0%</div><div class="pstat-label">Quiz Avg</div></div>
+      </div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+      <div class="menu-item" onclick="openWeak()">
+        <div class="menu-icon" style="background:rgba(250,109,142,.1)">🎯</div>
+        <div class="menu-label">Weak Topic Finder</div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon" style="background:rgba(124,109,250,.1)">📊</div>
+        <div class="menu-label">Analytics</div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon" style="background:rgba(61,245,160,.1)">🏆</div>
+        <div class="menu-label">Certificates</div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon" style="background:rgba(250,188,61,.1)">🔖</div>
+        <div class="menu-label">Bookmarks</div>
+        <div class="menu-arrow">›</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="switchTab('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="switchTab('search')"><div class="nav-icon">🔍</div><div class="nav-label">Search</div><div class="nav-dot"></div></div>
+    <div class="nav-item active" onclick="switchTab('profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div><div class="nav-dot"></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE: SUBJECTS ══════════════════ -->
+<div class="page hidden" id="pageSubjects">
+  <div class="topbar">
+    <div class="topbar-back" onclick="goBack('pageHome')">‹</div>
+    <div class="topbar-title" id="subjPageTitle">Batch</div>
+  </div>
+  <div class="scroll-area">
+    <div class="page-content" id="subjList"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE: CHAPTERS ══════════════════ -->
+<div class="page hidden" id="pageChapters">
+  <div class="topbar">
+    <div class="topbar-back" onclick="goBack('pageSubjects')">‹</div>
+    <div class="topbar-title" id="chapPageTitle">Subject</div>
+  </div>
+  <div class="scroll-area">
+    <div class="page-content" id="chapList"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE: LECTURES ══════════════════ -->
+<div class="page hidden" id="pageLectures">
+  <div class="topbar">
+    <div class="topbar-back" onclick="goBack('pageChapters')">‹</div>
+    <div class="topbar-title" id="lecPageTitle">Chapter</div>
+  </div>
+  <div class="scroll-area">
+    <div class="page-content" id="lecList"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE: VIDEO ══════════════════ -->
+<div class="page hidden" id="pageVideo">
+  <div class="topbar">
+    <div class="topbar-back" onclick="goBack('pageLectures')">‹</div>
+    <div class="topbar-title" id="vidPageTitle">Lecture</div>
+  </div>
+  <div class="scroll-area">
+    <!-- Video Player -->
+    <div class="video-wrap">
+      <video id="tgVideo" controls playsinline webkit-playsinline
+        preload="metadata" controlsList="nodownload">
+      </video>
+    </div>
+    <!-- Video Info -->
+    <div class="video-info">
+      <div class="video-title" id="vidTitle">Lecture Title</div>
+      <div class="video-meta">
+        <span id="vidBatch">Batch</span>
+        <span>·</span>
+        <span id="vidSubject">Subject</span>
+        <span>·</span>
+        <span id="vidChapter">Chapter</span>
+      </div>
+    </div>
+    <!-- Quick Actions -->
+    <div class="video-actions">
+      <div class="vact-btn" onclick="toggleWatched()">
+        <div class="vact-icon" id="watchedIcon">✅</div>
+        <div class="vact-label">Watched</div>
+      </div>
+      <div class="vact-btn" onclick="openFullWebsite()">
+        <div class="vact-icon">🌐</div>
+        <div class="vact-label">Website</div>
+      </div>
+      <div class="vact-btn" id="prevLecBtn" onclick="prevLec()">
+        <div class="vact-icon">⏮</div>
+        <div class="vact-label">Prev</div>
+      </div>
+      <div class="vact-btn" id="nextLecBtn" onclick="nextLec()">
+        <div class="vact-icon">⏭</div>
+        <div class="vact-label">Next</div>
+      </div>
+    </div>
+    <!-- Description placeholder -->
+    <div class="page-content">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.9rem;">
+        <div style="font-size:.72rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;">About this Lecture</div>
+        <div style="font-size:.8rem;color:var(--text-sub);line-height:1.6;" id="vidDesc">
+          Is lecture mein chapter ke important concepts cover honge. Notes aur DPP website pe available hain.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  TELEGRAM WEB APP INIT
+// ══════════════════════════════════════
+const tg = window.Telegram?.WebApp;
+if(tg) {
+  tg.ready();
+  tg.expand();
+  tg.setHeaderColor('#080810');
+  tg.setBackgroundColor('#080810');
+}
+
+// User info from Telegram
+const tgUser = tg?.initDataUnsafe?.user;
+if(tgUser) {
+  const name = tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '');
+  document.getElementById('tgName').textContent = name;
+  document.getElementById('profName').textContent = name;
+  document.getElementById('profHandle').textContent = '@' + (tgUser.username || 'user');
+}
+
+// ══════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════
+let DB_DATA = null;
+let currentBatch = '', currentSubject = '', currentChapter = '';
+let currentLectures = [], currentLecIdx = 0;
+let pageHistory = ['pageHome'];
+
+const SERVER = localStorage.getItem('vx_server') ||
+  (JSON.parse(localStorage.getItem('vx_railway')||'[]')[0]) ||
+  (JSON.parse(localStorage.getItem('vx_servers')||'[]')[0]) || '';
+
+const COLORS = ['#7c6dfa','#3df5a0','#fa6d8e','#fabc3d','#3dc8fa','#fa8c3d'];
+const EMOJIS = ['📚','⚗️','🧬','💻','🌐','🎯','🏆','⚡','🔬','🎓'];
+
+// ══════════════════════════════════════
+//  LOAD DATA
+// ══════════════════════════════════════
+async function loadData(){
+  if(!SERVER) { renderStaticBatches(); return; }
+  try {
+    const r = await fetch(SERVER + '/api/db', {signal: AbortSignal.timeout(5000)});
+    DB_DATA = await r.json();
+    renderBatches(DB_DATA.batches || {});
+    updateHomeStats(DB_DATA.batches || {});
+  } catch {
+    renderStaticBatches();
+  }
+}
+
+function updateHomeStats(batches){
+  const batchCount = Object.keys(batches).length;
+  let totalLec = 0;
+  Object.values(batches).forEach(b =>
+    Object.values(b.subjects||{}).forEach(s =>
+      Object.values(s.chapters||{}).forEach(ch => { totalLec += (ch.lectures||[]).length; })
+    )
+  );
+  const watched = Object.keys(JSON.parse(localStorage.getItem('vx_lec_progress')||'{}')).length;
+  animCount('hStatBatch', batchCount);
+  animCount('hStatLec', totalLec);
+  animCount('hStatDone', watched);
+  animCount('pWatched', watched);
+}
+
+function animCount(id, target){
+  const el = document.getElementById(id);
+  let start = 0; const dur = 800;
+  const step = ts => {
+    if(!step.s) step.s = ts;
+    const p = Math.min((ts-step.s)/dur,1);
+    el.textContent = Math.round((1-Math.pow(1-p,3))*target);
+    if(p<1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function renderBatches(batches){
+  const scroll = document.getElementById('batchScroll');
+  if(!Object.keys(batches).length) { renderStaticBatches(); return; }
+  scroll.innerHTML = Object.entries(batches).map(([name,data],i) => {
+    const c = COLORS[i%COLORS.length];
+    const e = EMOJIS[i%EMOJIS.length];
+    const subjCount = Object.keys(data.subjects||{}).length;
+    return `<div class="batch-mini" onclick="openBatch('${name.replace(/'/g,"\\'")}')">
+      <div class="batch-mini-visual" style="background:linear-gradient(135deg,${c}22,${c}08)">${e}</div>
+      <div class="batch-mini-info">
+        <div class="batch-mini-name">${name}</div>
+        <div class="batch-mini-count">${subjCount} subjects</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderStaticBatches(){
+  const batches = [
+    {name:'JEE Mains',e:'⚗️',c:'#7c6dfa',s:3},
+    {name:'NEET',e:'🧬',c:'#3df5a0',s:3},
+    {name:'Class 11th',e:'📚',c:'#fa6d8e',s:4},
+    {name:'Class 12th',e:'🎓',c:'#fabc3d',s:4},
+    {name:'DSA',e:'💻',c:'#3dc8fa',s:3},
+  ];
+  document.getElementById('batchScroll').innerHTML = batches.map(b =>
+    `<div class="batch-mini" onclick="openBatch('${b.name}')">
+      <div class="batch-mini-visual" style="background:linear-gradient(135deg,${b.c}22,${b.c}08)">${b.e}</div>
+      <div class="batch-mini-info">
+        <div class="batch-mini-name">${b.name}</div>
+        <div class="batch-mini-count">${b.s} subjects</div>
+      </div>
+    </div>`
+  ).join('');
+  animCount('hStatBatch', batches.length);
+  animCount('hStatLec', 250);
+}
+
+// ══════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p => {
+    if(p.id === id){
+      p.classList.remove('hidden','slide-back');
+    } else {
+      p.classList.add('hidden');
+      p.classList.remove('slide-back');
+    }
+  });
+  // Haptic
+  tg?.HapticFeedback?.impactOccurred('light');
+}
+
+function goBack(targetPage){
+  pageHistory.pop();
+  const prev = pageHistory[pageHistory.length-1] || targetPage;
+  showPage(prev);
+}
+
+function switchTab(tab){
+  const map = {home:'pageHome', search:'pageSearch', profile:'pageProfile'};
+  pageHistory = [map[tab]];
+  showPage(map[tab]);
+  // Update nav active
+  document.querySelectorAll('.nav-item').forEach((item,i) => {
+    item.classList.toggle('active', ['home','search','profile'][i] === tab);
+  });
+  if(tab === 'search') setTimeout(()=>document.getElementById('searchInput').focus(), 300);
+}
+
+// ══════════════════════════════════════
+//  BATCH → SUBJECT → CHAPTER → LECTURE
+// ══════════════════════════════════════
+function openBatch(bname){
+  currentBatch = bname;
+  document.getElementById('subjPageTitle').textContent = bname;
+  pageHistory.push('pageSubjects');
+  showPage('pageSubjects');
+
+  const bdata = DB_DATA?.batches?.[bname];
+  const subjects = bdata ? Object.entries(bdata.subjects||{}) : getStaticSubjects(bname);
+  const list = document.getElementById('subjList');
+  list.innerHTML = subjects.map(([sname,sdata],i) => {
+    const c = COLORS[i%COLORS.length];
+    const teacher = sdata?.teacher || 'Expert Faculty';
+    const chCount = Object.keys(sdata?.chapters||{}).length || 0;
+    return `<div class="list-item" onclick="openSubject('${sname.replace(/'/g,"\\'")}')">
+      <div class="list-icon" style="background:${c}18;border:1px solid ${c}28;font-size:.75rem;font-weight:900;color:${c}">${sname.slice(0,3).toUpperCase()}</div>
+      <div class="list-info">
+        <div class="list-title">${sname}</div>
+        <div class="list-sub">👨‍🏫 ${teacher} · ${chCount} chapters</div>
+      </div>
+      <div class="list-arrow">›</div>
+    </div>`;
+  }).join('');
+}
+
+function getStaticSubjects(bname){
+  const map = {
+    'JEE Mains':[['Physics',{teacher:'HC Verma Sir',chapters:{}}],['Chemistry',{teacher:'VK Jaiswal Sir',chapters:{}}],['Mathematics',{teacher:'ML Khanna Sir',chapters:{}}]],
+    'NEET':[['Biology',{teacher:'NCERT Expert',chapters:{}}],['Physics',{teacher:'DC Pandey Sir',chapters:{}}],['Chemistry',{teacher:'Morrison Boyd',chapters:{}}]],
+  };
+  return map[bname] || [['Subject 1',{teacher:'Expert',chapters:{}}]];
+}
+
+function openSubject(sname){
+  currentSubject = sname;
+  document.getElementById('chapPageTitle').textContent = sname;
+  pageHistory.push('pageChapters');
+  showPage('pageChapters');
+
+  const sdata = DB_DATA?.batches?.[currentBatch]?.subjects?.[sname];
+  const chapters = sdata ? Object.entries(sdata.chapters||{}) : getStaticChapters(sname);
+  const list = document.getElementById('chapList');
+  list.innerHTML = chapters.map(([cname,cdata],i) => {
+    const lecCount = (cdata?.lectures||[]).length || 0;
+    const num = String(i+1).padStart(2,'0');
+    return `<div class="list-item" onclick="openChapter('${cname.replace(/'/g,"\\'")}', ${i})">
+      <div class="list-icon" style="background:rgba(124,109,250,.1);border:1px solid rgba(124,109,250,.2);font-size:.65rem;font-weight:900;color:var(--accent)">CH<br>${num}</div>
+      <div class="list-info">
+        <div class="list-title">${cname}</div>
+        <div class="list-sub">${lecCount || '?'} lectures</div>
+      </div>
+      <div class="list-badge">${lecCount}</div>
+      <div class="list-arrow">›</div>
+    </div>`;
+  }).join('');
+}
+
+function getStaticChapters(sname){
+  return Array.from({length:6},(_,i)=>
+    [`Chapter ${String(i+1).padStart(2,'0')} — ${sname}`, {lectures:[]}]
+  );
+}
+
+function openChapter(cname, chIdx){
+  currentChapter = cname;
+  document.getElementById('lecPageTitle').textContent = cname;
+  pageHistory.push('pageLectures');
+  showPage('pageLectures');
+
+  const cdata = DB_DATA?.batches?.[currentBatch]?.subjects?.[currentSubject]?.chapters?.[cname];
+  currentLectures = cdata?.lectures || Array.from({length:8},(_,i)=>({
+    title:`Lecture ${String(i+1).padStart(2,'0')} — ${cname}`,
+    idx:i, msg_id:null
+  }));
+
+  const progress = JSON.parse(localStorage.getItem('vx_lec_progress')||'{}');
+  const list = document.getElementById('lecList');
+  list.innerHTML = currentLectures.map((lec,i) => {
+    const key = `${currentBatch}__${currentSubject}__${currentChapter}__${lec.idx||i}`;
+    const watched = !!progress[key];
+    return `<div class="lec-item" onclick="openLecture(${i})">
+      <div class="lec-thumb">${watched?'✅':'▶️'}</div>
+      <div class="lec-info">
+        <div class="lec-title">${lec.title||`Lecture ${String(i+1).padStart(2,'0')}`}</div>
+        <div class="lec-meta">Lecture ${String(i+1).padStart(2,'0')} · ${watched?'Watched':'Not watched'}</div>
+      </div>
+      ${watched?'<div class="lec-watched">✓</div>':''}
+    </div>`;
+  }).join('');
+}
+
+function openLecture(idx){
+  currentLecIdx = idx;
+  const lec = currentLectures[idx];
+  if(!lec) return;
+
+  document.getElementById('vidPageTitle').textContent = lec.title || `Lecture ${idx+1}`;
+  document.getElementById('vidTitle').textContent = lec.title || `Lecture ${idx+1}`;
+  document.getElementById('vidBatch').textContent = currentBatch;
+  document.getElementById('vidSubject').textContent = currentSubject;
+  document.getElementById('vidChapter').textContent = currentChapter;
+
+  pageHistory.push('pageVideo');
+  showPage('pageVideo');
+
+  // Load video
+  const v = document.getElementById('tgVideo');
+  if(SERVER && lec.msg_id){
+    v.src = `${SERVER}/api/stream/${lec.msg_id}`;
+    v.load();
+    v.play().catch(()=>{});
+  } else {
+    // No video ID
+    v.src = '';
+  }
+
+  // Update nav buttons
+  document.getElementById('prevLecBtn').style.opacity = idx===0?'0.4':'1';
+  document.getElementById('nextLecBtn').style.opacity = idx>=currentLectures.length-1?'0.4':'1';
+
+  // Update watched icon
+  const progress = JSON.parse(localStorage.getItem('vx_lec_progress')||'{}');
+  const key = `${currentBatch}__${currentSubject}__${currentChapter}__${lec.idx||idx}`;
+  document.getElementById('watchedIcon').textContent = progress[key] ? '✅' : '☑️';
+
+  // Telegram back button
+  tg?.BackButton?.show();
+  tg?.BackButton?.onClick(()=>{ goBack('pageLectures'); tg.BackButton.hide(); });
+}
+
+function prevLec(){
+  if(currentLecIdx <= 0) return;
+  openLecture(currentLecIdx - 1);
+}
+function nextLec(){
+  if(currentLecIdx >= currentLectures.length - 1) return;
+  openLecture(currentLecIdx + 1);
+}
+
+function toggleWatched(){
+  const lec = currentLectures[currentLecIdx];
+  if(!lec) return;
+  const key = `${currentBatch}__${currentSubject}__${currentChapter}__${lec.idx||currentLecIdx}`;
+  const progress = JSON.parse(localStorage.getItem('vx_lec_progress')||'{}');
+  if(progress[key]){
+    delete progress[key];
+    document.getElementById('watchedIcon').textContent = '☑️';
+  } else {
+    progress[key] = true;
+    document.getElementById('watchedIcon').textContent = '✅';
+  }
+  localStorage.setItem('vx_lec_progress', JSON.stringify(progress));
+  tg?.HapticFeedback?.notificationOccurred('success');
+}
+
+function openFullWebsite(){
+  const url = window.location.origin + '/vaultx-video.html' +
+    `?batch=${encodeURIComponent(currentBatch)}&subject=${encodeURIComponent(currentSubject)}&chapter=${encodeURIComponent(currentChapter)}&idx=${currentLecIdx}`;
+  tg?.openLink ? tg.openLink(url) : window.open(url,'_blank');
+}
+
+// ══════════════════════════════════════
+//  SEARCH
+// ══════════════════════════════════════
+function doSearch(q){
+  const results = document.getElementById('searchResults');
+  if(!q.trim()){ results.innerHTML='<div class="loader">Type karo kuch dhundne ke liye...</div>'; return; }
+  if(!DB_DATA){ results.innerHTML='<div class="loader">Data load ho raha hai...</div>'; return; }
+
+  const matches = [];
+  const query = q.toLowerCase();
+  Object.entries(DB_DATA.batches||{}).forEach(([bname,bdata]) => {
+    if(bname.toLowerCase().includes(query)) matches.push({type:'batch',name:bname,sub:Object.keys(bdata.subjects||{}).length+' subjects'});
+    Object.entries(bdata.subjects||{}).forEach(([sname,sdata]) => {
+      if(sname.toLowerCase().includes(query)) matches.push({type:'subject',name:sname,sub:bname,batch:bname});
+      Object.keys(sdata.chapters||{}).forEach(cname => {
+        if(cname.toLowerCase().includes(query)) matches.push({type:'chapter',name:cname,sub:sname+' · '+bname,batch:bname,subj:sname});
+      });
+    });
+  });
+
+  if(!matches.length){ results.innerHTML='<div class="loader">Koi result nahi mila 🔍</div>'; return; }
+  results.innerHTML = matches.slice(0,20).map(m => `
+    <div class="list-item" onclick="searchOpen('${m.type}','${(m.name).replace(/'/g,"\\'")}','${(m.batch||'').replace(/'/g,"\\'")}','${(m.subj||'').replace(/'/g,"\\'")}')">
+      <div class="list-icon" style="background:var(--card);border:1px solid var(--border);font-size:.8rem">
+        ${m.type==='batch'?'📚':m.type==='subject'?'📖':'📑'}
+      </div>
+      <div class="list-info">
+        <div class="list-title">${m.name}</div>
+        <div class="list-sub">${m.sub}</div>
+      </div>
+      <div class="list-arrow">›</div>
+    </div>`).join('');
+}
+
+function searchOpen(type, name, batch, subj){
+  if(type==='batch'){ switchTab('home'); setTimeout(()=>openBatch(name),100); }
+  else if(type==='subject'){ switchTab('home'); setTimeout(()=>{ openBatch(batch); setTimeout(()=>openSubject(name),200); },100); }
+  else if(type==='chapter'){ switchTab('home'); setTimeout(()=>{ openBatch(batch); setTimeout(()=>{ openSubject(subj); setTimeout(()=>openChapter(name,0),200); },200); },100); }
+}
+
+// ══════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════
+loadData();
+
+// Profile stats
+const progress = JSON.parse(localStorage.getItem('vx_lec_progress')||'{}');
+const watchedCount = Object.keys(progress).length;
+document.getElementById('pWatched').textContent = watchedCount;
+
+// Quiz average
+const quizHistory = JSON.parse(localStorage.getItem('vx_quiz_history')||'{}');
+let totalCorrect=0, totalQ=0;
+Object.values(quizHistory).forEach(s => Object.values(s).forEach(c => {
+  totalCorrect += c.correct||0; totalQ += c.total||0;
+}));
+document.getElementById('pScore').textContent = totalQ ? Math.round(totalCorrect/totalQ*100)+'%' : '—';
+</script>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="hi" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VAULTX — Batch</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080810;--surface:#10101e;--card:#131320;--card-hover:#1a1a2e;
+  --border:rgba(255,255,255,0.06);--border-hover:rgba(255,255,255,0.14);
+  --text:#eeeef8;--text-sub:#7777a0;--text-muted:#33334a;
+  --accent:#7c6dfa;--accent2:#fa6d8e;--accent3:#3df5a0;
+  --transition:.35s cubic-bezier(0.4,0,0.2,1);
+  --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+}
+[data-theme="light"]{
+  --bg:#f4f4fc;--surface:#e8e8f5;--card:#ffffff;--card-hover:#f8f8ff;
+  --border:rgba(0,0,0,0.07);--border-hover:rgba(0,0,0,0.14);
+  --text:#0e0e22;--text-sub:#55558a;--text-muted:#aaaacc;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.35;}
+.mesh{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.mesh-orb{position:absolute;border-radius:50%;filter:blur(120px);animation:drift 20s ease-in-out infinite alternate;}
+.mesh-orb:nth-child(1){width:600px;height:600px;background:radial-gradient(circle,rgba(124,109,250,0.1) 0%,transparent 70%);top:-150px;left:-100px;}
+.mesh-orb:nth-child(2){width:400px;height:400px;background:radial-gradient(circle,rgba(250,109,142,0.07) 0%,transparent 70%);bottom:-50px;right:-80px;animation-delay:-10s;}
+@keyframes drift{0%{transform:translate(0,0);}100%{transform:translate(30px,25px);}}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:200;height:62px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 max(1.5rem,env(safe-area-inset-left));
+  background:rgba(8,8,16,0.85);backdrop-filter:blur(24px) saturate(180%);
+  border-bottom:1px solid var(--border);}
+[data-theme="light"] header{background:rgba(244,244,252,0.88);}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.brand-logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#7c6dfa,#fa6d8e);
+  display:flex;align-items:center;justify-content:center;font-size:.95rem;
+  box-shadow:0 0 18px rgba(124,109,250,0.35);}
+.brand-text{font-family:var(--font-display);font-size:1.2rem;font-weight:800;letter-spacing:2px;
+  background:linear-gradient(90deg,#a89dfc,#fc8daa,#3df5a0);background-size:200%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 5s linear infinite;}
+@keyframes shimmer{to{background-position:200%;}}
+.header-right{display:flex;align-items:center;gap:.5rem;}
+.h-btn{height:32px;display:flex;align-items:center;gap:5px;padding:0 12px;
+  background:var(--card);border:1px solid var(--border);border-radius:8px;
+  color:var(--text-sub);font-family:var(--font-body);font-size:.72rem;font-weight:600;
+  cursor:pointer;transition:all .25s;white-space:nowrap;}
+.h-btn:hover{border-color:var(--accent);color:var(--accent);}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;
+  color:var(--text-sub);text-decoration:none;padding:6px 12px;border-radius:8px;
+  border:1px solid var(--border);background:var(--card);transition:all .25s;}
+.back-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* MAIN */
+main{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.2rem 5rem;}
+
+/* BATCH HERO */
+.batch-hero{margin-bottom:2.5rem;animation:fade-up .5s ease both;}
+@keyframes fade-up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.batch-hero-inner{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:1.8rem;overflow:hidden;position:relative;
+}
+.batch-hero-inner::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));
+}
+.batch-hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.batch-icon-wrap{width:60px;height:60px;border-radius:16px;
+  background:linear-gradient(135deg,rgba(124,109,250,0.2),rgba(250,109,142,0.1));
+  display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;
+  border:1px solid rgba(124,109,250,0.2);}
+.batch-hero-info{flex:1;}
+.batch-label{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--accent);margin-bottom:.3rem;}
+.batch-name{font-family:var(--font-display);font-size:1.6rem;font-weight:800;line-height:1.1;margin-bottom:.4rem;}
+.batch-meta{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;}
+.batch-meta-pill{display:flex;align-items:center;gap:4px;
+  background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  border-radius:6px;padding:3px 10px;
+  font-size:.7rem;font-weight:700;color:var(--text-sub);}
+
+/* SEARCH */
+.search-wrap{margin-bottom:1.5rem;animation:fade-up .5s .1s ease both;}
+.search-box{display:flex;align-items:center;gap:10px;
+  background:var(--surface);border:1.5px solid var(--border);border-radius:12px;
+  padding:.75rem 1rem;transition:border-color .3s,box-shadow .3s;}
+.search-box:focus-within{border-color:rgba(124,109,250,.4);box-shadow:0 0 0 3px rgba(124,109,250,.07);}
+.search-icon{color:var(--text-muted);font-size:.9rem;flex-shrink:0;}
+.search-input{flex:1;background:transparent;border:none;outline:none;
+  font-family:var(--font-body);font-size:.88rem;color:var(--text);font-weight:400;}
+.search-input::placeholder{color:var(--text-muted);}
+
+/* SECTION */
+.section-label{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;animation:fade-up .5s .15s ease both;}
+.section-label-line{height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--border));}
+.section-label-text{font-size:.65rem;font-weight:800;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
+
+/* SUBJECT GRID */
+.subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.85rem;animation:fade-up .5s .2s ease both;}
+
+.subject-card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:1.1rem 1.1rem 1rem;cursor:pointer;text-decoration:none;
+  transition:transform .3s,border-color .3s,box-shadow .3s;
+  display:flex;flex-direction:column;gap:.7rem;
+  position:relative;overflow:hidden;
+}
+.subject-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--subj-color,var(--accent));border-radius:3px 0 0 3px;
+  opacity:0;transition:opacity .3s;}
+.subject-card:hover{transform:translateY(-3px);border-color:var(--border-hover);
+  box-shadow:0 12px 40px rgba(0,0,0,.3);}
+.subject-card:hover::before{opacity:1;}
+
+.subj-top{display:flex;align-items:center;gap:.8rem;}
+.subj-badge{width:40px;height:40px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:900;letter-spacing:.5px;
+  background:var(--badge-bg,rgba(124,109,250,0.12));
+  color:var(--subj-color,var(--accent));
+  border:1px solid var(--badge-border,rgba(124,109,250,0.2));}
+.subj-info{flex:1;min-width:0;}
+.subj-name{font-family:var(--font-display);font-size:.95rem;font-weight:700;
+  color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.subj-teacher{font-size:.72rem;color:var(--text-sub);font-weight:500;margin-top:2px;}
+
+.subj-progress-wrap{display:flex;flex-direction:column;gap:5px;}
+.subj-progress-track{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}
+.subj-progress-fill{height:100%;border-radius:4px;background:var(--subj-color,var(--accent));
+  transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+.subj-progress-text{display:flex;justify-content:space-between;
+  font-size:.62rem;font-weight:700;color:var(--text-muted);}
+.subj-progress-text span:last-child{color:var(--subj-color,var(--accent));}
+
+.subj-footer{display:flex;align-items:center;justify-content:space-between;}
+.subj-counts{display:flex;gap:.5rem;}
+.subj-count-pill{display:flex;align-items:center;gap:3px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:5px;padding:2px 8px;font-size:.65rem;font-weight:700;color:var(--text-muted);}
+.subj-arrow{width:26px;height:26px;border-radius:7px;
+  background:rgba(124,109,250,0.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;color:var(--accent);transition:all .3s;}
+.subject-card:hover .subj-arrow{background:var(--accent);color:#fff;transform:translateX(2px);}
+
+.no-results{display:none;text-align:center;padding:3rem 1rem;color:var(--text-muted);}
+.no-results.show{display:block;}
+.no-results p{font-size:.9rem;font-weight:600;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px;}
+</style>
+</head>
+<body>
+
+<div class="mesh"><div class="mesh-orb"></div><div class="mesh-orb"></div></div>
+
+<header>
+  <a class="brand" href="vaultx-home.html">
+    <div class="brand-logo">⚡</div>
+    <span class="brand-text">VAULTX</span>
+  </a>
+  <div class="header-right">
+    <a class="back-btn" href="vaultx-home.html">← Home</a>
+    <button class="h-btn" onclick="toggleMode()"><span id="modeIcon">🌙</span></button>
+  </div>
+</header>
+
+<main>
+
+  <!-- BATCH HERO -->
+  <div class="batch-hero">
+    <div class="batch-hero-inner">
+      <div class="batch-hero-top">
+        <div class="batch-icon-wrap" id="batchIcon">📚</div>
+        <div class="batch-hero-info">
+          <div class="batch-label">Batch</div>
+          <div class="batch-name" id="batchName">Loading...</div>
+          <div class="batch-meta" id="batchMeta"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="searchInput" type="text"
+        placeholder="Subject dhundo..."
+        oninput="filterSubjects(this.value)" autocomplete="off"/>
+    </div>
+  </div>
+
+  <!-- SECTION -->
+  <div class="section-label">
+    <span class="section-label-text">Subjects</span>
+    <div class="section-label-line"></div>
+  </div>
+
+  <!-- SUBJECT GRID -->
+  <div class="subject-grid" id="subjectGrid"></div>
+  <div class="no-results" id="noResults"><p>Koi subject nahi mila 🔍</p></div>
+
+</main>
+
+<script>
+/* ── THEME ── */
+const savedTheme = localStorage.getItem('vx_theme')||'dark';
+document.documentElement.setAttribute('data-theme',savedTheme);
+document.getElementById('modeIcon').textContent = savedTheme==='dark'?'🌙':'☀️';
+function toggleMode(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  const next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('vx_theme',next);
+  document.getElementById('modeIcon').textContent=next==='dark'?'🌙':'☀️';
+}
+
+/* ── PARAMS ── */
+const urlp = new URLSearchParams(window.location.search);
+const batchName = urlp.get('batch') || 'Batch';
+document.title = `VAULTX — ${batchName}`;
+
+const COLORS = [
+  {color:'#7c6dfa',bg:'rgba(124,109,250,0.1)',border:'rgba(124,109,250,0.2)'},
+  {color:'#3df5a0',bg:'rgba(61,245,160,0.1)', border:'rgba(61,245,160,0.2)'},
+  {color:'#fa6d8e',bg:'rgba(250,109,142,0.1)',border:'rgba(250,109,142,0.2)'},
+  {color:'#fabc3d',bg:'rgba(250,188,61,0.1)', border:'rgba(250,188,61,0.2)'},
+  {color:'#3dc8fa',bg:'rgba(61,200,250,0.1)', border:'rgba(61,200,250,0.2)'},
+  {color:'#fa8c3d',bg:'rgba(250,140,61,0.1)', border:'rgba(250,140,61,0.2)'},
+];
+
+const BATCH_ICONS = {'JEE':'⚗️','NEET':'🧬','Class 11':'📗','Class 12':'📘','DSA':'💻','CSS':'🌐','Python':'🐍','default':'📚'};
+function getBatchIcon(name){
+  for(const [k,v] of Object.entries(BATCH_ICONS)) if(name.includes(k)) return v;
+  return BATCH_ICONS.default;
+}
+
+/* ── STATIC BATCH DATA (fallback) ── */
+const BATCHES = {
+  'JEE Mains':{label:'JEE MAINS',subjects:[
+    {badge:'PHY',name:'Physics',teacher:'HC Verma Sir',chapters:15,lectures:85,done:20},
+    {badge:'CHE',name:'Chemistry',teacher:'VK Jaiswal Sir',chapters:12,lectures:72,done:15},
+    {badge:'MAT',name:'Mathematics',teacher:'ML Khanna Sir',chapters:18,lectures:95,done:10},
+  ]},
+  'NEET':{label:'NEET',subjects:[
+    {badge:'BIO',name:'Biology',teacher:'NCERT Expert',chapters:16,lectures:90,done:30},
+    {badge:'PHY',name:'Physics',teacher:'DC Pandey Sir',chapters:14,lectures:75,done:12},
+    {badge:'CHE',name:'Chemistry',teacher:'Morrison Boyd',chapters:13,lectures:68,done:8},
+  ]},
+  'Class 11th':{label:'CLASS 11TH',subjects:[
+    {badge:'PHY',name:'Physics',teacher:'HC Verma Sir',chapters:10,lectures:55,done:25},
+    {badge:'CHE',name:'Chemistry',teacher:'NCERT Sir',chapters:9,lectures:48,done:18},
+    {badge:'MAT',name:'Mathematics',teacher:'RD Sharma Sir',chapters:12,lectures:62,done:5},
+  ]},
+  'DSA':{label:'DSA',subjects:[
+    {badge:'ARR',name:'Arrays & Strings',teacher:'Striver Sir',chapters:8,lectures:42,done:35},
+    {badge:'TRE',name:'Trees & Graphs',teacher:'Aditya Verma Sir',chapters:10,lectures:58,done:0},
+    {badge:'DP',name:'Dynamic Programming',teacher:'Striver Sir',chapters:12,lectures:65,done:0},
+  ]},
+};
+
+function renderSubjects(subjects){
+  const grid = document.getElementById('subjectGrid');
+  grid.innerHTML = '';
+  subjects.forEach((s, i) => {
+    const c = COLORS[i % COLORS.length];
+    const pct = s.lectures > 0 ? Math.round((s.done/s.lectures)*100) : 0;
+    const card = document.createElement('a');
+    card.className = 'subject-card';
+    card.href = `vaultx-chapters.html?batch=${encodeURIComponent(batchName)}&subject=${encodeURIComponent(s.name)}`;
+    card.style.cssText = `--subj-color:${c.color};--badge-bg:${c.bg};--badge-border:${c.border}`;
+    card.innerHTML = `
+      <div class="subj-top">
+        <div class="subj-badge">${s.badge}</div>
+        <div class="subj-info">
+          <div class="subj-name">${s.name}</div>
+          <div class="subj-teacher">👨‍🏫 ${s.teacher}</div>
+        </div>
+      </div>
+      <div class="subj-progress-wrap">
+        <div class="subj-progress-track">
+          <div class="subj-progress-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="subj-progress-text">
+          <span>${s.done}/${s.lectures} lectures</span>
+          <span>${pct}%</span>
+        </div>
+      </div>
+      <div class="subj-footer">
+        <div class="subj-counts">
+          <div class="subj-count-pill">📑 ${s.chapters} ch</div>
+          <div class="subj-count-pill">🎬 ${s.lectures} lec</div>
+        </div>
+        <div class="subj-arrow">→</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function setBatchHero(bdata, subjects){
+  document.getElementById('batchName').textContent = batchName;
+  document.getElementById('batchIcon').textContent = getBatchIcon(batchName);
+  const totalLec = subjects.reduce((a,s)=>a+s.lectures,0);
+  const totalDone = subjects.reduce((a,s)=>a+s.done,0);
+  const meta = document.getElementById('batchMeta');
+  meta.innerHTML = `
+    <div class="batch-meta-pill">📖 ${subjects.length} subjects</div>
+    <div class="batch-meta-pill">🎬 ${totalLec} lectures</div>
+    <div class="batch-meta-pill">✅ ${totalDone} done</div>`;
+}
+
+async function loadBatch(){
+  // Try server first
+  const server = localStorage.getItem('vx_server') || (localStorage.getItem('vx_servers') && JSON.parse(localStorage.getItem('vx_servers'))[0]);
+  if(server){
+    try {
+      const r = await fetch(server+'/api/db',{signal:AbortSignal.timeout(4000)});
+      const data = await r.json();
+      const bdata = data.batches?.[batchName];
+      if(bdata){
+        const subjects = Object.entries(bdata.subjects||{}).map(([name,s],i)=>({
+          badge: name.slice(0,3).toUpperCase(),
+          name, teacher: s.teacher||'Coming Soon',
+          chapters: Object.keys(s.chapters||{}).length||1,
+          lectures: Object.values(s.chapters||{}).reduce((a,c)=>a+(c.lectures||[]).length,0)||1,
+          done: 0
+        }));
+        setBatchHero(bdata, subjects);
+        renderSubjects(subjects);
+        return;
+      }
+    } catch {}
+  }
+  // Fallback to static data
+  const bdata = BATCHES[batchName] || BATCHES['JEE Mains'];
+  setBatchHero(bdata, bdata.subjects);
+  renderSubjects(bdata.subjects);
+}
+
+function filterSubjects(q){
+  const query = q.toLowerCase();
+  const cards = document.querySelectorAll('.subject-card');
+  let vis = 0;
+  cards.forEach(c=>{
+    const match = !query || c.textContent.toLowerCase().includes(query);
+    c.style.display = match?'':'none';
+    if(match) vis++;
+  });
+  document.getElementById('noResults').classList.toggle('show', vis===0 && q!=='');
+}
+
+loadBatch();
+</script>
+</body>
+</html>

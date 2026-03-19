@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="hi" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VAULTX — Chapters</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080810;--surface:#10101e;--card:#131320;--card-hover:#1a1a2e;
+  --border:rgba(255,255,255,0.06);--border-hover:rgba(255,255,255,0.14);
+  --text:#eeeef8;--text-sub:#7777a0;--text-muted:#33334a;
+  --accent:#7c6dfa;--accent2:#fa6d8e;--accent3:#3df5a0;
+  --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+}
+[data-theme="light"]{
+  --bg:#f4f4fc;--surface:#e8e8f5;--card:#ffffff;--card-hover:#f8f8ff;
+  --border:rgba(0,0,0,0.07);--border-hover:rgba(0,0,0,0.14);
+  --text:#0e0e22;--text-sub:#55558a;--text-muted:#aaaacc;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;}
+.mesh{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.mesh-orb{position:absolute;border-radius:50%;filter:blur(100px);}
+.mesh-orb:nth-child(1){width:500px;height:500px;background:radial-gradient(circle,rgba(124,109,250,0.09) 0%,transparent 70%);top:-100px;left:-80px;}
+.mesh-orb:nth-child(2){width:350px;height:350px;background:radial-gradient(circle,rgba(250,109,142,0.06) 0%,transparent 70%);bottom:0;right:-60px;}
+
+header{position:sticky;top:0;z-index:200;height:60px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+[data-theme="light"] header{background:rgba(244,244,252,0.88);}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.brand-logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#7c6dfa,#fa6d8e);display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.brand-text{font-family:var(--font-display);font-size:1.1rem;font-weight:800;letter-spacing:2px;
+  background:linear-gradient(90deg,#a89dfc,#fc8daa);background-size:200%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 5s linear infinite;}
+@keyframes shimmer{to{background-position:200%;}}
+.h-right{display:flex;gap:.4rem;}
+.h-btn{height:30px;padding:0 12px;background:var(--card);border:1px solid var(--border);border-radius:7px;
+  color:var(--text-sub);font-family:var(--font-body);font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.h-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+main{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:2rem 1.2rem 5rem;}
+
+/* BREADCRUMB */
+.breadcrumb{display:flex;align-items:center;gap:.4rem;margin-bottom:1.5rem;flex-wrap:wrap;animation:fade-up .4s ease both;}
+@keyframes fade-up{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.bc-item{font-size:.72rem;font-weight:600;color:var(--text-muted);text-decoration:none;transition:color .2s;}
+.bc-item:hover{color:var(--accent);}
+.bc-sep{font-size:.65rem;color:var(--text-muted);}
+.bc-current{color:var(--text-sub);font-weight:700;}
+
+/* SUBJECT HEADER */
+.subj-header{background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:1.4rem;margin-bottom:1.8rem;position:relative;overflow:hidden;
+  animation:fade-up .4s .05s ease both;}
+.subj-header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));}
+.subj-header-inner{display:flex;align-items:center;gap:1rem;}
+.subj-icon{width:50px;height:50px;border-radius:13px;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(124,109,250,0.2),rgba(250,109,142,0.1));
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;
+  border:1px solid rgba(124,109,250,0.2);}
+.subj-details{flex:1;}
+.subj-subtitle{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:3px;}
+.subj-title{font-family:var(--font-display);font-size:1.3rem;font-weight:800;}
+.subj-teacher-row{font-size:.75rem;color:var(--text-sub);margin-top:4px;}
+.subj-stats-row{display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap;}
+.stat-chip{background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:6px;padding:3px 10px;font-size:.67rem;font-weight:700;color:var(--text-muted);}
+
+/* CHAPTER LIST */
+.chapter-list{display:flex;flex-direction:column;gap:.6rem;animation:fade-up .4s .1s ease both;}
+
+.chapter-item{
+  display:flex;align-items:center;gap:.9rem;
+  background:var(--card);border:1px solid var(--border);border-radius:13px;
+  padding:.9rem 1.1rem;cursor:pointer;text-decoration:none;
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+  position:relative;overflow:hidden;
+}
+.chapter-item::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(124,109,250,0.03));
+  opacity:0;transition:opacity .3s;}
+.chapter-item:hover{transform:translateX(4px);border-color:rgba(124,109,250,0.25);
+  box-shadow:0 4px 24px rgba(0,0,0,.2);}
+.chapter-item:hover::after{opacity:1;}
+.chapter-item:active{transform:translateX(2px) scale(.99);}
+
+.ch-num{
+  width:36px;height:36px;border-radius:9px;flex-shrink:0;
+  background:rgba(124,109,250,0.1);border:1px solid rgba(124,109,250,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-size:.7rem;font-weight:800;
+  color:var(--accent);letter-spacing:.5px;
+}
+.ch-info{flex:1;min-width:0;}
+.ch-title{font-size:.9rem;font-weight:700;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ch-meta{display:flex;align-items:center;gap:.5rem;margin-top:3px;}
+.ch-meta-tag{font-size:.65rem;font-weight:700;color:var(--text-muted);}
+.ch-dot{width:3px;height:3px;border-radius:50%;background:var(--text-muted);flex-shrink:0;}
+.ch-right{display:flex;align-items:center;gap:.6rem;flex-shrink:0;}
+.ch-lec-count{font-size:.7rem;font-weight:800;color:var(--accent);
+  background:rgba(124,109,250,0.1);border:1px solid rgba(124,109,250,0.2);
+  border-radius:5px;padding:2px 8px;white-space:nowrap;}
+.ch-arrow{color:var(--text-muted);font-size:.8rem;transition:transform .25s,color .25s;}
+.chapter-item:hover .ch-arrow{transform:translateX(3px);color:var(--accent);}
+
+.no-data{text-align:center;padding:3rem;color:var(--text-muted);font-size:.9rem;font-weight:600;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px;}
+</style>
+</head>
+<body>
+<div class="mesh"><div class="mesh-orb"></div><div class="mesh-orb"></div></div>
+
+<header>
+  <a class="brand" href="vaultx-home.html">
+    <div class="brand-logo">⚡</div>
+    <span class="brand-text">VAULTX</span>
+  </a>
+  <div class="h-right">
+    <button class="h-btn" onclick="history.back()">← Back</button>
+    <button class="h-btn" onclick="toggleMode()" id="modeBtn">🌙</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb">
+    <a class="bc-item" href="vaultx-home.html">Home</a>
+    <span class="bc-sep">›</span>
+    <a class="bc-item" id="bcBatch" href="#">Batch</a>
+    <span class="bc-sep">›</span>
+    <span class="bc-current" id="bcSubject">Subject</span>
+  </div>
+
+  <!-- SUBJECT HEADER -->
+  <div class="subj-header">
+    <div class="subj-header-inner">
+      <div class="subj-icon" id="subjIcon">📖</div>
+      <div class="subj-details">
+        <div class="subj-subtitle" id="subjBatch">BATCH</div>
+        <div class="subj-title" id="subjTitle">Subject</div>
+        <div class="subj-teacher-row" id="subjTeacher">👨‍🏫 Teacher</div>
+        <div class="subj-stats-row" id="subjStats"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAPTER LIST -->
+  <div class="chapter-list" id="chapterList"></div>
+  <div class="no-data" id="noData" style="display:none">Koi chapters nahi hain abhi 📭</div>
+
+</main>
+
+<script>
+const savedTheme = localStorage.getItem('vx_theme')||'dark';
+document.documentElement.setAttribute('data-theme',savedTheme);
+document.getElementById('modeBtn').textContent = savedTheme==='dark'?'🌙':'☀️';
+function toggleMode(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  const next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('vx_theme',next);
+  document.getElementById('modeBtn').textContent=next==='dark'?'🌙':'☀️';
+}
+
+const urlp = new URLSearchParams(window.location.search);
+const batchName   = urlp.get('batch')   || 'Batch';
+const subjectName = urlp.get('subject') || 'Subject';
+document.title = `VAULTX — ${subjectName}`;
+
+// Breadcrumb
+document.getElementById('bcBatch').textContent   = batchName;
+document.getElementById('bcBatch').href = `vaultx-batch.html?batch=${encodeURIComponent(batchName)}`;
+document.getElementById('bcSubject').textContent  = subjectName;
+
+const SUBJ_ICONS = {'Physics':'⚛️','Chemistry':'⚗️','Mathematics':'📐','Biology':'🧬',
+  'Maths':'📐','Organic':'🧪','Inorganic':'⚗️','Physical':'🔬',
+  'Arrays':'📊','Trees':'🌲','DP':'💡','default':'📖'};
+function getIcon(n){for(const[k,v] of Object.entries(SUBJ_ICONS)) if(n.includes(k)) return v; return SUBJ_ICONS.default;}
+
+const STATIC_CHAPTERS = {
+  'Physics':[{n:'01',t:'Physical World & Units',l:6},{n:'02',t:'Kinematics',l:8},{n:'03',t:'Laws of Motion',l:9},{n:'04',t:'Work, Energy & Power',l:7},{n:'05',t:'Rotational Motion',l:10},{n:'06',t:'Gravitation',l:6},{n:'07',t:'Properties of Matter',l:5}],
+  'Chemistry':[{n:'01',t:'Basic Concepts',l:5},{n:'02',t:'Atomic Structure',l:7},{n:'03',t:'Chemical Bonding',l:8},{n:'04',t:'States of Matter',l:6},{n:'05',t:'Thermodynamics',l:9},{n:'06',t:'Equilibrium',l:7}],
+  'Mathematics':[{n:'01',t:'Sets & Relations',l:5},{n:'02',t:'Functions',l:7},{n:'03',t:'Trigonometry',l:9},{n:'04',t:'Complex Numbers',l:6},{n:'05',t:'Quadratic Equations',l:5},{n:'06',t:'Permutations',l:6},{n:'07',t:'Binomial Theorem',l:4}],
+  'Biology':[{n:'01',t:'Cell Structure',l:7},{n:'02',t:'Cell Division',l:6},{n:'03',t:'Biomolecules',l:8},{n:'04',t:'Photosynthesis',l:7},{n:'05',t:'Respiration',l:6}],
+};
+
+function renderChapters(chapters, teacher){
+  document.getElementById('subjIcon').textContent = getIcon(subjectName);
+  document.getElementById('subjBatch').textContent = batchName.toUpperCase();
+  document.getElementById('subjTitle').textContent = subjectName;
+  document.getElementById('subjTeacher').textContent = `👨‍🏫 ${teacher||'Expert Faculty'}`;
+  const totalLec = chapters.reduce((a,c)=>a+c.l,0);
+  document.getElementById('subjStats').innerHTML = `
+    <div class="stat-chip">📑 ${chapters.length} chapters</div>
+    <div class="stat-chip">🎬 ${totalLec} lectures</div>`;
+
+  const list = document.getElementById('chapterList');
+  list.innerHTML = '';
+  if(!chapters.length){document.getElementById('noData').style.display='block';return;}
+
+  chapters.forEach((ch,i) => {
+    const a = document.createElement('a');
+    a.className = 'chapter-item';
+    a.href = `vaultx-player.html?batch=${encodeURIComponent(batchName)}&subject=${encodeURIComponent(subjectName)}&chapter=${encodeURIComponent(ch.t)}&num=${ch.n}`;
+    a.style.animationDelay = `${i*0.04}s`;
+    a.innerHTML = `
+      <div class="ch-num">CH<br>${ch.n}</div>
+      <div class="ch-info">
+        <div class="ch-title">${ch.t}</div>
+        <div class="ch-meta">
+          <span class="ch-meta-tag">Chapter ${ch.n}</span>
+          <div class="ch-dot"></div>
+          <span class="ch-meta-tag">${ch.l} lectures</span>
+        </div>
+      </div>
+      <div class="ch-right">
+        <div class="ch-lec-count">🎬 ${ch.l}</div>
+        <div class="ch-arrow">›</div>
+      </div>`;
+    list.appendChild(a);
+  });
+}
+
+async function loadChapters(){
+  const server = localStorage.getItem('vx_server') || (localStorage.getItem('vx_servers') && JSON.parse(localStorage.getItem('vx_servers'))[0]);
+  if(server){
+    try{
+      const r = await fetch(server+'/api/db',{signal:AbortSignal.timeout(4000)});
+      const data = await r.json();
+      const subjData = data.batches?.[batchName]?.subjects?.[subjectName];
+      if(subjData){
+        const chapters = Object.entries(subjData.chapters||{}).map(([name,ch],i)=>({
+          n:String(i+1).padStart(2,'0'), t:name, l:(ch.lectures||[]).length||1
+        }));
+        renderChapters(chapters, subjData.teacher);
+        return;
+      }
+    }catch{}
+  }
+  const fallback = STATIC_CHAPTERS[subjectName] || STATIC_CHAPTERS['Physics'];
+  renderChapters(fallback, 'Expert Faculty');
+}
+
+loadChapters();
+</script>
+</body>
+</html>
