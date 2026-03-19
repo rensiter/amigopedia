@@ -1099,18 +1099,18 @@ function renderSrvList() {
       else               { dotColor='#ff6584'; pingText=ping+'ms';         pingClass='slow'; }
     }
 
-    return \`<div class="srv-item \${isActive?'active-server':''}" onclick="useServer('\${url}')">
-      <div class="srv-item-dot" style="background:\${dotColor}"></div>
+    return `<div class="srv-item ${isActive?'active-server':''}" onclick="useServer('${url}')">
+      <div class="srv-item-dot" style="background:${dotColor}"></div>
       <div class="srv-item-info">
-        <div class="srv-item-name">\${typeEmoji} \${typeName}</div>
-        <div class="srv-item-ping \${pingClass}">\${pingText}\${isActive?' · Using now':''}</div>
+        <div class="srv-item-name">${typeEmoji} ${typeName}</div>
+        <div class="srv-item-ping ${pingClass}">${pingText}${isActive?' · Using now':''}</div>
       </div>
-      \${isActive
+      ${isActive
         ? '<span class="srv-item-use">✓ Active</span>'
         : '<span class="srv-item-use" style="background:transparent;color:var(--text-muted)">Use</span>'}
-      <button onclick="removeServer(event,'\${url}','\${type}')"
+      <button onclick="removeServer(event,'${url}','${type}')"
         style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.7rem;padding:2px 4px;border-radius:4px;">✕</button>
-    </div>\`;
+    </div>`;
   };
 
   let html = '';
@@ -1128,7 +1128,7 @@ function renderSrvList() {
                    : RENDER_SERVERS.includes(activeServer)  ? '🔋 Render'
                    : 'None';
   document.getElementById('srvFooter').textContent = activeServer
-    ? \`\${activeType} · Streaming\`
+    ? `${activeType} · Streaming`
     : 'No active server';
 }
 
@@ -1141,12 +1141,12 @@ function useServer(url) {
   activeServer = url;
   localStorage.setItem('vx_active_server', url);
   renderSrvList();
-  updateSrvIndicator(true, \`S\${SERVERS.indexOf(url)+1} · Manual\`);
+  updateSrvIndicator(true, `S${SERVERS.indexOf(url)+1} · Manual`);
   const v = document.getElementById('mainVideo');
   const ids = JSON.parse(localStorage.getItem('vx_lecture_ids')||'{}');
-  const msgId = ids[\`\${currentChapter}__\${currentIdx}\`];
+  const msgId = ids[`${currentChapter}__${currentIdx}`];
   if (msgId) {
-    v.src = \`\${activeServer}/api/stream/\${msgId}\`;
+    v.src = `${activeServer}/api/stream/${msgId}`;
     document.getElementById('vpPh').style.display='none';
     v.play().catch(()=>{});
   }
@@ -1318,7 +1318,7 @@ function requestTelegramFallback() {
   }
 
   const ids = JSON.parse(localStorage.getItem('vx_lecture_ids') || '{}');
-  const msgId = ids[\`\${currentChapter}__\${currentIdx}\`];
+  const msgId = ids[`${currentChapter}__${currentIdx}`];
   if (msgId) {
     triggerTelegramFallback(msgId, lecTitle(), currentChapter, currentBatch);
   }
