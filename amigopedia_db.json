@@ -4,7 +4,11 @@
       "subjects": {
         "ORGANIC ( SKM SIR )": {
           "teacher": "Coming Soon",
-          "chapters": {}
+          "chapters": {
+            "ISOMERISM": {
+              "lectures": []
+            }
+          }
         }
       }
     }
