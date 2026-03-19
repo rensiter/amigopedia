@@ -54,7 +54,11 @@
         },
         "Tu hi": {
           "teacher": "Coming Soon",
-          "chapters": {}
+          "chapters": {
+            "Ghost": {
+              "lectures": []
+            }
+          }
         }
       }
     }
