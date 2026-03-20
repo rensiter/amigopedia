@@ -35,47 +35,6 @@
           }
         }
       }
-    },
-    "B4U": {
-      "subjects": {
-        "Hindi movie": {
-          "teacher": "Coming Soon",
-          "chapters": {
-            "Kabir Singh": {
-              "lectures": [
-                {
-                  "idx": 0,
-                  "title": "Kabir Singh (2019) Bollywood Hindi Movie HD 720p ESub.mp4",
-                  "msg_id": 59
-                }
-              ]
-            }
-          }
-        },
-        "Tu hi": {
-          "teacher": "Coming Soon",
-          "chapters": {
-            "Ghost": {
-              "lectures": [
-                {
-                  "idx": 0,
-                  "title": "The revenge",
-                  "msg_id": 75
-                }
-              ]
-            },
-            "Iso": {
-              "lectures": [
-                {
-                  "idx": 0,
-                  "title": "Iso 01",
-                  "msg_id": 87
-                }
-              ]
-            }
-          }
-        }
-      }
     }
   },
   "index_msgs": {},
