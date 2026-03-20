@@ -1,23 +1,5 @@
 {
   "batches": {
-    "AK CLASS 12TH": {
-      "subjects": {
-        "ORGANIC": {
-          "teacher": "SKM SIR",
-          "chapters": {
-            "STREOIDOMER": {
-              "lectures": [
-                {
-                  "idx": 0,
-                  "title": "Lecture 01",
-                  "msg_id": 26
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
     "AK CLASS 11TH": {
       "subjects": {
         "ORGANIC": {
